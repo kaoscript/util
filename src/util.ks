@@ -7,6 +7,8 @@
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  **/
+#![runtime(type(alias='KSType'))]
+
 func $clone(value = null) { // {{{
 	if value == null {
 		return null
