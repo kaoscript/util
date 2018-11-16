@@ -55,13 +55,15 @@ const $merge = {
 }
 
 extern {
-	sealed class Array
+	sealed class Array {
+		slice(begin?, end?): Array
+	}
 	sealed class Object
 }
 
 impl Array {
 	append(...args) { // {{{
-		let l, i, j, arg
+		let l, i, j, arg: Array
 		for k from 0 til args.length {
 			arg = Array.from(args[k])
 			
