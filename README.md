@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 ![Dependencies](https://img.shields.io/david/kaoscript/util.svg)
 
-Utilities for [kaoscript](https://github.com/kaoscript/kaoscript)
+Utilities for the compiler [kaoscript](https://github.com/kaoscript/kaoscript)
 
 License
 -------
