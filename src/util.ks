@@ -43,7 +43,7 @@ const $merge = {
 		return source
 	} // }}}
 	object(source, current) { // {{{
-		for key of current {
+		for const :key of current {
 			if source[key] {
 				$merge.merge(source, key, current[key])
 			}
@@ -66,14 +66,14 @@ impl Array {
 		let l, i, j, arg: Array
 		for k from 0 til args.length {
 			arg = Array.from(args[k])
-			
+
 			if (l = arg.length) > 50000 {
 				i = 0
 				j = 50000
-				
+
 				while(i < l) {
 					this.push(...arg.slice(i, j))
-					
+
 					i = j
 					j += 50000
 				}
@@ -99,22 +99,22 @@ impl Array {
 		for item, index in this {
 			return true if fn(item, index, this)
 		}
-		
+
 		return false
 	} // }}}
 	clear() { // {{{
 		this.length = 0
-		
+
 		return this
 	} // }}}
 	clone() { // {{{
 		let i = this.length
 		let clone = new Array(i)
-		
+
 		while i {
 			clone[--i] = $clone(this[i])
 		}
-		
+
 		return clone
 	} // }}}
 	contains(item, from = 0) { // {{{
@@ -134,7 +134,7 @@ impl Array {
 	remove(...items): Array { // {{{
 		if items.length == 1 {
 			let item = items[0]
-			
+
 			for i from this.length - 1 to 0 by -1 when this[i] == item {
 				this.splice(i, 1)
 			}
@@ -146,29 +146,29 @@ impl Array {
 				}
 			}
 		}
-		
+
 		return this
 	} // }}}
 	static merge(...args) { // {{{
 		let source
-		
+
 		let i = 0
 		let l = args.length
 		while i < l && !((source ?= args[i]) && source is Array) {
 			++i
 		}
 		++i
-		
+
 		while i < l {
 			if args[i] is Array {
-				for value of args[i] {
+				for value in args[i] {
 					source.pushUniq(value)
 				}
 			}
-			
+
 			++i
 		}
-		
+
 		return source
 	} // }}}
 	pushUniq(...args) { // {{{
@@ -190,13 +190,13 @@ impl Array {
 		if a.length != b.length {
 			return false
 		}
-		
+
 		for i from 0 til a.length {
 			if a[i] != b[i] {
 				return false
 			}
 		}
-		
+
 		return true
 	} // }}}
 }
@@ -210,43 +210,43 @@ impl Object {
 			if object.constructor.prototype.clone is Function {
 				return object.clone()
 			}
-			
+
 			let clone = {}
-			
-			for key, value of object {
+
+			for const value, key of object {
 				clone[key] = $clone(value)
 			}
-			
+
 			return clone
 		} // }}}
 		defaults(...args): Object => Object.merge({}, ...args)
 		isEmpty(item) { // {{{
-			for key of item when item.hasOwnProperty(key) {
+			for const :key of item when item.hasOwnProperty(key) {
 				return false
 			}
-			
+
 			return true
 		} // }}}
 		merge(...args) { // {{{
 			let source
-			
+
 			let i = 0
 			let l = args.length
 			while i < l && !((source ?= args[i]) && source is Object) {
 				++i
 			}
 			++i
-			
+
 			while i < l {
 				if args[i] is Object {
-					for key, value of args[i] {
+					for const value, key of args[i] {
 						$merge.merge(source, key, value)
 					}
 				}
-				
+
 				++i
 			}
-			
+
 			return source
 		} // }}}
 	}
