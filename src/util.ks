@@ -54,6 +54,7 @@ const $merge = {
 	} // }}}
 }
 
+#[rules(non-exhaustive)]
 extern {
 	sealed class Array {
 		slice(begin?, end?): Array
