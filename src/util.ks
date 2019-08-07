@@ -1,6 +1,6 @@
 /**
  * util.ks
- * Version 0.1.0
+ * Version 0.1.1
  * August 4th, 2017
  *
  * Copyright (c) 2017 Baptiste Augrain
