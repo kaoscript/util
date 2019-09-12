@@ -7,7 +7,6 @@
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  **/
-#![runtime(type(alias='KSType'))]
 
 func $clone(value = null) { // {{{
 	if value == null {
@@ -44,7 +43,7 @@ const $merge = {
 	} // }}}
 	object(source, current) { // {{{
 		for const :key of current {
-			if source[key] {
+			if source[key]? {
 				$merge.merge(source, key, current[key])
 			}
 			else {
@@ -57,16 +56,17 @@ const $merge = {
 #[rules(non-exhaustive)]
 extern {
 	sealed class Array {
+		length: Number
 		slice(begin?, end?): Array
 	}
 	sealed class Object
 }
 
 impl Array {
-	append(...args) { // {{{
+	append(...args): Array { // {{{
 		let l, i, j, arg: Array
 		for k from 0 til args.length {
-			arg = Array.from(args[k])
+			arg = Helper.array(args[k])
 
 			if (l = arg.length) > 50000 {
 				i = 0
@@ -85,7 +85,7 @@ impl Array {
 		}
 		return this
 	} // }}}
-	appendUniq(...args) { // {{{
+	appendUniq(...args): Array { // {{{
 		if args.length == 1 {
 			this.pushUniq(...args[0])
 		}
@@ -103,34 +103,26 @@ impl Array {
 
 		return false
 	} // }}}
-	clear() { // {{{
+	clear(): Array { // {{{
 		this.length = 0
 
 		return this
 	} // }}}
-	clone() { // {{{
+	clone(): Array { // {{{
 		let i = this.length
 		let clone = new Array(i)
 
-		while i {
+		while i > 0 {
 			clone[--i] = $clone(this[i])
 		}
 
 		return clone
 	} // }}}
-	contains(item, from = 0) { // {{{
+	contains(item, from = 0): Boolean { // {{{
 		return this.indexOf(item, from) != -1
 	} // }}}
-	static from(item) { // {{{
-		if KSType.isEnumerable(item) && !KSType.isString(item) {
-			return (item is Array) ? item : Array.prototype.slice.call(item)
-		}
-		else {
-			return [item]
-		}
-	} // }}}
-	last(index = 1) { // {{{
-		return this.length ? this[this.length - index] : null
+	last(index: Number = 1) { // {{{
+		return this.length != 0 ? this[this.length - index] : null
 	} // }}}
 	remove(...items): Array { // {{{
 		if items.length == 1 {
@@ -150,7 +142,7 @@ impl Array {
 
 		return this
 	} // }}}
-	static merge(...args) { // {{{
+	static merge(...args): Array { // {{{
 		let source
 
 		let i = 0
@@ -170,9 +162,9 @@ impl Array {
 			++i
 		}
 
-		return source
+		return source:Array ?? []
 	} // }}}
-	pushUniq(...args) { // {{{
+	pushUniq(...args): Array { // {{{
 		if args.length == 1 {
 			if !this.contains(args[0]) {
 				this.push(args[0])
@@ -187,7 +179,7 @@ impl Array {
 		}
 		return this
 	} // }}}
-	static same(a, b) { // {{{
+	static same(a, b): Boolean { // {{{
 		if a.length != b.length {
 			return false
 		}
@@ -204,7 +196,7 @@ impl Array {
 
 impl Object {
 	static {
-		clone(object) { // {{{
+		clone(object): Object { // {{{
 			if object.constructor.clone is Function && object.constructor.clone != this {
 				return object.constructor.clone(object)
 			}
@@ -221,14 +213,8 @@ impl Object {
 			return clone
 		} // }}}
 		defaults(...args): Object => Object.merge({}, ...args)
-		isEmpty(item) { // {{{
-			for const :key of item when item.hasOwnProperty(key) {
-				return false
-			}
-
-			return true
-		} // }}}
-		merge(...args) { // {{{
+		isEmpty(item): Boolean => Helper.isEmptyObject(item)
+		merge(...args): Object { // {{{
 			let source
 
 			let i = 0
@@ -248,7 +234,7 @@ impl Object {
 				++i
 			}
 
-			return source
+			return source:Object ?? {}
 		} // }}}
 	}
 }
