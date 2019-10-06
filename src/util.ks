@@ -15,8 +15,8 @@ func $clone(value = null) { // {{{
 	else if value is Array {
 		return (value as Array).clone()
 	}
-	else if value is Object {
-		return Object.clone(value)
+	else if value is Dictionary {
+		return Dictionary.clone(value)
 	}
 	else {
 		return value
@@ -28,8 +28,8 @@ const $merge = {
 		if value is Array {
 			source[key] = (value as Array).clone()
 		}
-		else if value is Object {
-			if source[key] is Object {
+		else if value is Dictionary {
+			if source[key] is Dictionary {
 				$merge.object(source[key], value)
 			}
 			else {
@@ -59,7 +59,7 @@ extern {
 		length: Number
 		slice(begin?, end?): Array
 	}
-	sealed class Object
+	sealed class Dictionary
 }
 
 impl Array {
@@ -194,38 +194,35 @@ impl Array {
 	} // }}}
 }
 
-impl Object {
+impl Dictionary {
 	static {
-		clone(object): Object { // {{{
-			if object.constructor.clone is Function && object.constructor.clone != this {
-				return object.constructor.clone(object)
-			}
-			if object.constructor.prototype.clone is Function {
-				return object.clone()
+		clone(dict): Dictionary { // {{{
+			if dict.clone is Function {
+				return dict.clone()
 			}
 
 			let clone = {}
 
-			for const value, key of object {
+			for const value, key of dict {
 				clone[key] = $clone(value)
 			}
 
 			return clone
 		} // }}}
-		defaults(...args): Object => Object.merge({}, ...args)
-		isEmpty(item): Boolean => Helper.isEmptyObject(item)
-		merge(...args): Object { // {{{
+		defaults(...args): Dictionary => Dictionary.merge({}, ...args)
+		isEmpty(item): Boolean => Helper.isEmptyDictionary(item)
+		merge(...args): Dictionary { // {{{
 			let source
 
 			let i = 0
 			let l = args.length
-			while i < l && !((source ?= args[i]) && source is Object) {
+			while i < l && !((source ?= args[i]) && source is Dictionary) {
 				++i
 			}
 			++i
 
 			while i < l {
-				if args[i] is Object {
+				if args[i] is Dictionary {
 					for const value, key of args[i] {
 						$merge.merge(source, key, value)
 					}
@@ -234,7 +231,7 @@ impl Object {
 				++i
 			}
 
-			return source:Object ?? {}
+			return source:Dictionary ?? {}
 		} // }}}
 	}
 }
