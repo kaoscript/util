@@ -143,7 +143,7 @@ impl Array {
 		return this
 	} // }}}
 	static merge(...args): Array { // {{{
-		let source
+		let source: Array = []
 
 		let i = 0
 		let l = args.length
@@ -162,7 +162,7 @@ impl Array {
 			++i
 		}
 
-		return source:Array ?? []
+		return source
 	} // }}}
 	pushUniq(...args): Array { // {{{
 		if args.length == 1 {
@@ -212,7 +212,7 @@ impl Dictionary {
 		defaults(...args): Dictionary => Dictionary.merge({}, ...args)
 		isEmpty(item): Boolean => Helper.isEmptyDictionary(item)
 		merge(...args): Dictionary { // {{{
-			let source
+			let source: Dictionary = {}
 
 			let i = 0
 			let l = args.length
@@ -231,7 +231,7 @@ impl Dictionary {
 				++i
 			}
 
-			return source:Dictionary ?? {}
+			return source
 		} // }}}
 	}
 }
