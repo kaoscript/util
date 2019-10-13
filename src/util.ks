@@ -13,7 +13,7 @@ func $clone(value = null) { // {{{
 		return null
 	}
 	else if value is Array {
-		return (value as Array).clone()
+		return value.clone()
 	}
 	else if value is Dictionary {
 		return Dictionary.clone(value)
@@ -26,10 +26,10 @@ func $clone(value = null) { // {{{
 const $merge = {
 	merge(source, key, value) { // {{{
 		if value is Array {
-			source[key] = (value as Array).clone()
+			source[key] = value.clone()
 		}
-		else if value is Dictionary {
-			if source[key] is Dictionary {
+		else if value is not Primitive {
+			if source[key] is Dictionary || source[key] is Object {
 				$merge.object(source[key], value)
 			}
 			else {
@@ -222,7 +222,7 @@ impl Dictionary {
 			++i
 
 			while i < l {
-				if args[i] is Dictionary {
+				if args[i] is Dictionary || args[i] is Object {
 					for const value, key of args[i] {
 						$merge.merge(source, key, value)
 					}
