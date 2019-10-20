@@ -42,7 +42,7 @@ const $merge = {
 		return source
 	} // }}}
 	object(source, current) { // {{{
-		for const :key of current {
+		for const _, key of current {
 			if source[key]? {
 				$merge.merge(source, key, current[key])
 			}
