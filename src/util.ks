@@ -65,14 +65,14 @@ extern {
 impl Array {
 	append(...args): Array { // {{{
 		let l, i, j, arg: Array
-		for k from 0 til args.length {
+		for const k from 0 til args.length {
 			arg = Helper.array(args[k])
 
 			if (l = arg.length) > 50000 {
 				i = 0
 				j = 50000
 
-				while(i < l) {
+				while i < l {
 					this.push(...arg.slice(i, j))
 
 					i = j
@@ -128,13 +128,13 @@ impl Array {
 		if items.length == 1 {
 			let item = items[0]
 
-			for i from this.length - 1 to 0 by -1 when this[i] == item {
+			for const i from this.length - 1 to 0 by -1 when this[i] == item {
 				this.splice(i, 1)
 			}
 		}
 		else {
-			for item in items {
-				for i from this.length - 1 to 0 by -1 when this[i] == item {
+			for const item in items {
+				for const i from this.length - 1 to 0 by -1 when this[i] == item {
 					this.splice(i, 1)
 				}
 			}
