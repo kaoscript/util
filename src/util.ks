@@ -59,11 +59,16 @@ extern {
 		length: Number
 		slice(begin?, end?): Array
 	}
-	sealed class Dictionary
+
+	sealed class Dictionary {
+		static {
+			keys(...): Array<String>
+		}
+	}
 }
 
 impl Array {
-	append(...args): Array { // {{{
+	append(...args?): Array { // {{{
 		let l, i, j, arg: Array
 		for const k from 0 til args.length {
 			arg = Helper.array(args[k])
@@ -85,7 +90,7 @@ impl Array {
 		}
 		return this
 	} // }}}
-	appendUniq(...args): Array { // {{{
+	appendUniq(...args?): Array { // {{{
 		if args.length == 1 {
 			this.pushUniq(...args[0])
 		}
@@ -118,13 +123,33 @@ impl Array {
 
 		return clone
 	} // }}}
-	contains(item, from = 0): Boolean { // {{{
+	contains(item?, from: Number = 0): Boolean { // {{{
 		return this.indexOf(item, from) != -1
+	} // }}}
+	intersection(...arrays) { // {{{
+		const result = []
+
+		let seen
+		for const value in this {
+			seen = true
+
+			for const array in arrays while seen {
+				if array.indexOf(value) == -1 {
+					seen = false
+				}
+			}
+
+			if seen {
+				result.push(value)
+			}
+		}
+
+		return result
 	} // }}}
 	last(index: Number = 1) { // {{{
 		return this.length != 0 ? this[this.length - index] : null
 	} // }}}
-	remove(...items): Array { // {{{
+	remove(...items?): Array { // {{{
 		if items.length == 1 {
 			let item = items[0]
 
@@ -164,7 +189,7 @@ impl Array {
 
 		return source
 	} // }}}
-	pushUniq(...args): Array { // {{{
+	pushUniq(...args?): Array { // {{{
 		if args.length == 1 {
 			if !this.contains(args[0]) {
 				this.push(args[0])
@@ -196,9 +221,9 @@ impl Array {
 
 impl Dictionary {
 	static {
-		clone(dict): Dictionary { // {{{
+		clone(dict: Dictionary): Dictionary { // {{{
 			if dict.clone is Function {
-				return dict.clone()
+				return dict.clone()!!
 			}
 
 			let clone = {}
@@ -210,16 +235,39 @@ impl Dictionary {
 			return clone
 		} // }}}
 		defaults(...args): Dictionary => Dictionary.merge({}, ...args)
-		isEmpty(item): Boolean => Helper.isEmptyDictionary(item)
-		merge(...args): Dictionary { // {{{
+		isEmpty(dict: Dictionary): Boolean { // {{{
+			for const value of dict {
+				return false
+			}
+
+			return true
+		} // }}}
+		key(dict: Dictionary, index: Number): String? { // {{{
+			let i = -1
+
+			for const _, key of dict {
+				if ++i == index {
+					return key
+				}
+			}
+
+			return null
+		} // }}}
+		length(dict: Dictionary): Number => Dictionary.keys(dict).length
+		merge(...args?): Dictionary { // {{{
 			let source: Dictionary = {}
 
 			let i = 0
 			let l = args.length
-			while i < l && !((source ?= args[i]) && source is Dictionary) {
+			let src
+			while i < l && !((src ?= args[i]) && src is Dictionary) {
 				++i
 			}
 			++i
+
+			if ?src && src is Dictionary {
+				source = src
+			}
 
 			while i < l {
 				if args[i] is Dictionary || args[i] is Object {
@@ -232,6 +280,17 @@ impl Dictionary {
 			}
 
 			return source
+		} // }}}
+		value(dict: Dictionary, index: Number): Any? { // {{{
+			let i = -1
+
+			for const value of dict {
+				if ++i == index {
+					return value
+				}
+			}
+
+			return null
 		} // }}}
 	}
 }
