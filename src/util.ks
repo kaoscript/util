@@ -23,7 +23,7 @@ func $clone(value = null) { // {{{
 	}
 } // }}}
 
-const $merge = {
+var $merge = {
 	merge(source, key, value) { // {{{
 		if value is Array {
 			source[key] = value.clone()
@@ -42,7 +42,7 @@ const $merge = {
 		return source
 	} // }}}
 	object(source, current) { // {{{
-		for const _, key of current {
+		for var _, key of current {
 			if source[key]? {
 				$merge.merge(source, key, current[key])
 			}
@@ -69,8 +69,8 @@ extern {
 
 impl Array {
 	append(...args?): Array { // {{{
-		let l, i, j, arg: Array
-		for const k from 0 til args.length {
+		var dyn l, i, j, arg: Array
+		for var k from 0 til args.length {
 			arg = Helper.array(args[k])
 
 			if (l = arg.length) > 50000 {
@@ -114,8 +114,8 @@ impl Array {
 		return this
 	} // }}}
 	clone(): Array { // {{{
-		let i = this.length
-		let clone = new Array(i)
+		var dyn i = this.length
+		var dyn clone = new Array(i)
 
 		while i > 0 {
 			clone[--i] = $clone(this[i])
@@ -127,13 +127,13 @@ impl Array {
 		return this.indexOf(item, from) != -1
 	} // }}}
 	intersection(...arrays) { // {{{
-		const result = []
+		var result = []
 
-		let seen
-		for const value in this {
+		var dyn seen
+		for var value in this {
 			seen = true
 
-			for const array in arrays while seen {
+			for var array in arrays while seen {
 				if array.indexOf(value) == -1 {
 					seen = false
 				}
@@ -151,15 +151,15 @@ impl Array {
 	} // }}}
 	remove(...items?): Array { // {{{
 		if items.length == 1 {
-			let item = items[0]
+			var dyn item = items[0]
 
-			for const i from this.length - 1 to 0 by -1 when this[i] == item {
+			for var i from this.length - 1 to 0 by -1 when this[i] == item {
 				this.splice(i, 1)
 			}
 		}
 		else {
-			for const item in items {
-				for const i from this.length - 1 to 0 by -1 when this[i] == item {
+			for var item in items {
+				for var i from this.length - 1 to 0 by -1 when this[i] == item {
 					this.splice(i, 1)
 				}
 			}
@@ -168,10 +168,10 @@ impl Array {
 		return this
 	} // }}}
 	static merge(...args): Array { // {{{
-		let source: Array = []
+		var dyn source: Array = []
 
-		let i = 0
-		let l = args.length
+		var dyn i = 0
+		var dyn l = args.length
 		while i < l && !((source ?= args[i]) && source is Array) {
 			++i
 		}
@@ -226,9 +226,9 @@ impl Dictionary {
 				return dict.clone()!!
 			}
 
-			let clone = {}
+			var dyn clone = {}
 
-			for const value, key of dict {
+			for var value, key of dict {
 				clone[key] = $clone(value)
 			}
 
@@ -236,16 +236,16 @@ impl Dictionary {
 		} // }}}
 		defaults(...args): Dictionary => Dictionary.merge({}, ...args)
 		isEmpty(dict: Dictionary): Boolean { // {{{
-			for const value of dict {
+			for var value of dict {
 				return false
 			}
 
 			return true
 		} // }}}
 		key(dict: Dictionary, index: Number): String? { // {{{
-			let i = -1
+			var dyn i = -1
 
-			for const _, key of dict {
+			for var _, key of dict {
 				if ++i == index {
 					return key
 				}
@@ -255,11 +255,11 @@ impl Dictionary {
 		} // }}}
 		length(dict: Dictionary): Number => Dictionary.keys(dict).length
 		merge(...args?): Dictionary { // {{{
-			let source: Dictionary = {}
+			var dyn source: Dictionary = {}
 
-			let i = 0
-			let l = args.length
-			let src
+			var dyn i = 0
+			var dyn l = args.length
+			var dyn src
 			while i < l && !((src ?= args[i]) && src is Dictionary) {
 				++i
 			}
@@ -271,7 +271,7 @@ impl Dictionary {
 
 			while i < l {
 				if args[i] is Dictionary || args[i] is Object {
-					for const value, key of args[i] {
+					for var value, key of args[i] {
 						$merge.merge(source, key, value)
 					}
 				}
@@ -282,9 +282,9 @@ impl Dictionary {
 			return source
 		} // }}}
 		value(dict: Dictionary, index: Number): Any? { // {{{
-			let i = -1
+			var dyn i = -1
 
-			for const value of dict {
+			for var value of dict {
 				if ++i == index {
 					return value
 				}
