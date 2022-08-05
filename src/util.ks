@@ -7,8 +7,9 @@
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  **/
+import 'timsort' => TimSort
 
-func $clone(value = null) { // {{{
+func $clone(value = null) { # {{{
 	if value == null {
 		return null
 	}
@@ -21,37 +22,36 @@ func $clone(value = null) { // {{{
 	else {
 		return value
 	}
-} // }}}
+} # }}}
 
-var $merge = {
-	merge(source, key, value) { // {{{
-		if value is Array {
-			source[key] = value.clone()
-		}
-		else if value is not Primitive {
-			if source[key] is Dictionary || source[key] is Object {
-				$merge.object(source[key], value)
-			}
-			else {
-				source[key] = $clone(value)
-			}
+func $merge(source, key, value) { # {{{
+	if value is Array {
+		source[key] = value.clone()
+	}
+	else if value is not Primitive {
+		if source[key] is Dictionary || source[key] is Object {
+			$mergeObject(source[key], value)
 		}
 		else {
-			source[key] = value
+			source[key] = $clone(value)
 		}
-		return source
-	} // }}}
-	object(source, current) { // {{{
-		for var _, key of current {
-			if source[key]? {
-				$merge.merge(source, key, current[key])
-			}
-			else {
-				source[key] = current[key]
-			}
+	}
+	else {
+		source[key] = value
+	}
+	return source
+} # }}}
+
+func $mergeObject(source, current) { # {{{
+	for var _, key of current {
+		if source[key]? {
+			$merge(source, key, current[key])
 		}
-	} // }}}
-}
+		else {
+			source[key] = current[key]
+		}
+	}
+} # }}}
 
 #[rules(non-exhaustive)]
 extern {
@@ -68,7 +68,45 @@ extern {
 }
 
 impl Array {
-	append(...args?): Array { // {{{
+	static {
+		merge(...args): Array { # {{{
+			var dyn source: Array = []
+
+			var dyn i = 0
+			var dyn l = args.length
+			while i < l && !((source ?= args[i]) && source is Array) {
+				++i
+			}
+			++i
+
+			while i < l {
+				if args[i] is Array {
+					for value in args[i] {
+						source.pushUniq(value)
+					}
+				}
+
+				++i
+			}
+
+			return source
+		} # }}}
+		same(a, b): Boolean { # {{{
+			if a.length != b.length {
+				return false
+			}
+
+			for i from 0 til a.length {
+				if a[i] != b[i] {
+					return false
+				}
+			}
+
+			return true
+		} # }}}
+	}
+
+	append(...args?): Array { # {{{
 		var dyn l, i, j, arg: Array
 		for var k from 0 til args.length {
 			arg = Helper.array(args[k])
@@ -89,8 +127,8 @@ impl Array {
 			}
 		}
 		return this
-	} // }}}
-	appendUniq(...args?): Array { // {{{
+	} # }}}
+	appendUniq(...args?): Array { # {{{
 		if args.length == 1 {
 			this.pushUniq(...args[0])
 		}
@@ -100,20 +138,20 @@ impl Array {
 			}
 		}
 		return this
-	} // }}}
-	any(fn): Boolean { // {{{
+	} # }}}
+	any(fn): Boolean { # {{{
 		for item, index in this {
 			return true if fn(item, index, this)
 		}
 
 		return false
-	} // }}}
-	clear(): Array { // {{{
+	} # }}}
+	clear(): Array { # {{{
 		this.length = 0
 
 		return this
-	} // }}}
-	clone(): Array { // {{{
+	} # }}}
+	clone(): Array { # {{{
 		var dyn i = this.length
 		var dyn clone = new Array(i)
 
@@ -122,11 +160,11 @@ impl Array {
 		}
 
 		return clone
-	} // }}}
-	contains(item?, from: Number = 0): Boolean { // {{{
+	} # }}}
+	contains(item?, from: Number = 0): Boolean { # {{{
 		return this.indexOf(item, from) != -1
-	} // }}}
-	intersection(...arrays) { // {{{
+	} # }}}
+	intersection(...arrays) { # {{{
 		var result = []
 
 		var dyn seen
@@ -145,11 +183,26 @@ impl Array {
 		}
 
 		return result
-	} // }}}
-	last(index: Number = 1) { // {{{
+	} # }}}
+	last(index: Number = 1) { # {{{
 		return this.length != 0 ? this[this.length - index] : null
-	} // }}}
-	remove(...items?): Array { // {{{
+	} # }}}
+	pushUniq(...args?): Array { # {{{
+		if args.length == 1 {
+			if !this.contains(args[0]) {
+				this.push(args[0])
+			}
+		}
+		else {
+			for item in args {
+				if !this.contains(item) {
+					this.push(item)
+				}
+			}
+		}
+		return this
+	} # }}}
+	remove(...items?): Array { # {{{
 		if items.length == 1 {
 			var dyn item = items[0]
 
@@ -166,62 +219,17 @@ impl Array {
 		}
 
 		return this
-	} // }}}
-	static merge(...args): Array { // {{{
-		var dyn source: Array = []
+	} # }}}
+	sort(compareFn): Array { # {{{
+		TimSort.sort(this, compareFn)
 
-		var dyn i = 0
-		var dyn l = args.length
-		while i < l && !((source ?= args[i]) && source is Array) {
-			++i
-		}
-		++i
-
-		while i < l {
-			if args[i] is Array {
-				for value in args[i] {
-					source.pushUniq(value)
-				}
-			}
-
-			++i
-		}
-
-		return source
-	} // }}}
-	pushUniq(...args?): Array { // {{{
-		if args.length == 1 {
-			if !this.contains(args[0]) {
-				this.push(args[0])
-			}
-		}
-		else {
-			for item in args {
-				if !this.contains(item) {
-					this.push(item)
-				}
-			}
-		}
 		return this
-	} // }}}
-	static same(a, b): Boolean { // {{{
-		if a.length != b.length {
-			return false
-		}
-
-		for i from 0 til a.length {
-			if a[i] != b[i] {
-				return false
-			}
-		}
-
-		return true
-	} // }}}
+	} # }}}
 }
 
 impl Dictionary {
 	static {
-		clone(dict: Dictionary): Dictionary { // {{{
+		clone(dict: Dictionary): Dictionary { # {{{
 			if dict.clone is Function {
 				return dict.clone()!!
 			}
@@ -233,16 +241,16 @@ impl Dictionary {
 			}
 
 			return clone
-		} // }}}
+		} # }}}
 		defaults(...args): Dictionary => Dictionary.merge({}, ...args)
-		isEmpty(dict: Dictionary): Boolean { // {{{
+		isEmpty(dict: Dictionary): Boolean { # {{{
 			for var value of dict {
 				return false
 			}
 
 			return true
-		} // }}}
-		key(dict: Dictionary, index: Number): String? { // {{{
+		} # }}}
+		key(dict: Dictionary, index: Number): String? { # {{{
 			var dyn i = -1
 
 			for var _, key of dict {
@@ -252,9 +260,9 @@ impl Dictionary {
 			}
 
 			return null
-		} // }}}
+		} # }}}
 		length(dict: Dictionary): Number => Dictionary.keys(dict).length
-		merge(...args?): Dictionary { // {{{
+		merge(...args?): Dictionary { # {{{
 			var dyn source: Dictionary = {}
 
 			var dyn i = 0
@@ -272,7 +280,7 @@ impl Dictionary {
 			while i < l {
 				if args[i] is Dictionary || args[i] is Object {
 					for var value, key of args[i] {
-						$merge.merge(source, key, value)
+						$merge(source, key, value)
 					}
 				}
 
@@ -280,8 +288,8 @@ impl Dictionary {
 			}
 
 			return source
-		} // }}}
-		value(dict: Dictionary, index: Number): Any? { // {{{
+		} # }}}
+		value(dict: Dictionary, index: Number): Any? { # {{{
 			var dyn i = -1
 
 			for var value of dict {
@@ -291,6 +299,6 @@ impl Dictionary {
 			}
 
 			return null
-		} // }}}
+		} # }}}
 	}
 }

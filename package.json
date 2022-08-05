@@ -26,5 +26,8 @@
 	"files": [
 		"src"
 	],
-	"main": "src/util.ks"
+	"main": "src/util.ks",
+	"dependencies": {
+		"timsort": "^0.3.0"
+	}
 }
