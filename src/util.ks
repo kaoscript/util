@@ -9,7 +9,7 @@
  **/
 import 'timsort' => TimSort
 
-func $clone(value = null) { # {{{
+func $clone(value? = null) { # {{{
 	if value == null {
 		return null
 	}
