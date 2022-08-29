@@ -44,7 +44,7 @@ func $merge(source, key, value) { # {{{
 
 func $mergeObject(source, current) { # {{{
 	for var _, key of current {
-		if source[key]? {
+		if ?source[key] {
 			$merge(source, key, current[key])
 		}
 		else {
@@ -70,14 +70,15 @@ extern {
 impl Array {
 	static {
 		merge(...args): Array { # {{{
-			var dyn source: Array = []
+			var l = args.length
+			var mut source = []
+			var mut i = 0
 
-			var dyn i = 0
-			var dyn l = args.length
 			while i < l && !((source ?= args[i]) && source is Array) {
-				++i
+				i += 1
 			}
-			++i
+
+			i += 1
 
 			while i < l {
 				if args[i] is Array {
@@ -86,7 +87,7 @@ impl Array {
 					}
 				}
 
-				++i
+				i += 1
 			}
 
 			return source
@@ -96,7 +97,7 @@ impl Array {
 				return false
 			}
 
-			for i from 0 til a.length {
+			for var i from 0 til a.length {
 				if a[i] != b[i] {
 					return false
 				}
@@ -105,15 +106,14 @@ impl Array {
 			return true
 		} # }}}
 	}
-
 	append(...args?): Array { # {{{
-		var dyn l, i, j, arg: Array
 		for var k from 0 til args.length {
-			arg = Helper.array(args[k])
+			var arg: Array = Helper.array(args[k])
+			var l = arg.length
 
-			if (l = arg.length) > 50000 {
-				i = 0
-				j = 50000
+			if l > 50000 {
+				var mut i = 0
+				var mut j = 50000
 
 				while i < l {
 					this.push(...arg.slice(i, j))
@@ -140,7 +140,7 @@ impl Array {
 		return this
 	} # }}}
 	any(fn): Boolean { # {{{
-		for item, index in this {
+		for var item, index in this {
 			return true if fn(item, index, this)
 		}
 
@@ -152,11 +152,13 @@ impl Array {
 		return this
 	} # }}}
 	clone(): Array { # {{{
-		var dyn i = this.length
-		var dyn clone = new Array(i)
+		var mut i = this.length
+		var clone = new Array(i)
 
 		while i > 0 {
-			clone[--i] = $clone(this[i])
+			i -= 1
+
+			clone[i] = $clone(this[i])
 		}
 
 		return clone
@@ -166,8 +168,8 @@ impl Array {
 	} # }}}
 	intersection(...arrays) { # {{{
 		var result = []
+		var mut seen = false
 
-		var dyn seen
 		for var value in this {
 			seen = true
 
@@ -234,7 +236,7 @@ impl Dictionary {
 				return dict.clone()!!
 			}
 
-			var dyn clone = {}
+			var clone = {}
 
 			for var value, key of dict {
 				clone[key] = $clone(value)
@@ -251,27 +253,30 @@ impl Dictionary {
 			return true
 		} # }}}
 		key(dict: Dictionary, index: Number): String? { # {{{
-			var dyn i = -1
+			var mut i = 0
 
 			for var _, key of dict {
-				if ++i == index {
+				if i == index {
 					return key
 				}
+
+				i += 1
 			}
 
 			return null
 		} # }}}
 		length(dict: Dictionary): Number => Dictionary.keys(dict).length
 		merge(...args?): Dictionary { # {{{
-			var dyn source: Dictionary = {}
+			var mut source: Dictionary = {}
 
-			var dyn i = 0
-			var dyn l = args.length
+			var mut i = 0
+			var l = args.length
 			var dyn src
 			while i < l && !((src ?= args[i]) && src is Dictionary) {
-				++i
+				i += 1
 			}
-			++i
+
+			i += 1
 
 			if ?src && src is Dictionary {
 				source = src
@@ -284,18 +289,20 @@ impl Dictionary {
 					}
 				}
 
-				++i
+				i += 1
 			}
 
 			return source
 		} # }}}
 		value(dict: Dictionary, index: Number): Any? { # {{{
-			var dyn i = -1
+			var mut i = 0
 
 			for var value of dict {
-				if ++i == index {
+				if i == index {
 					return value
 				}
+
+				i += 1
 			}
 
 			return null
