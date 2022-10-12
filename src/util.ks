@@ -92,7 +92,7 @@ impl Array {
 
 			return source
 		} # }}}
-		same(a, b): Boolean { # {{{
+		same(a: Array, b: Array): Boolean { # {{{
 			if a.length != b.length {
 				return false
 			}
@@ -266,6 +266,7 @@ impl Dictionary {
 			return null
 		} # }}}
 		length(dict: Dictionary): Number => Dictionary.keys(dict).length
+		map(dict: Dictionary, fn: Function): Array => Dictionary.entries(dict).map(fn)
 		merge(...args?): Dictionary { # {{{
 			var mut source: Dictionary = {}
 
@@ -293,6 +294,17 @@ impl Dictionary {
 			}
 
 			return source
+		} # }}}
+		same(a: Dictionary, b: Dictionary): Boolean { # {{{
+			return false unless Array.same(Dictionary.keys(a), Dictionary.keys(b))
+
+			for var value, key of a {
+				if value != b[key] {
+					return false
+				}
+			}
+
+			return true
 		} # }}}
 		value(dict: Dictionary, index: Number): Any? { # {{{
 			var mut i = 0
