@@ -16,8 +16,8 @@ func $clone(value? = null) { # {{{
 	else if value is Array {
 		return value.clone()
 	}
-	else if value is Dictionary {
-		return Dictionary.clone(value)
+	else if value is Object {
+		return Object.clone(value)
 	}
 	else {
 		return value
@@ -29,7 +29,7 @@ func $merge(source, key, value) { # {{{
 		source[key] = value.clone()
 	}
 	else if value is not Primitive {
-		if source[key] is Dictionary || source[key] is Object {
+		if source[key] is Object {
 			$mergeObject(source[key], value)
 		}
 		else {
@@ -60,7 +60,7 @@ extern {
 		slice(begin?, end?): Array
 	}
 
-	sealed class Dictionary {
+	sealed class Object {
 		static {
 			keys(...): Array<String>
 		}
@@ -229,33 +229,33 @@ impl Array {
 	} # }}}
 }
 
-impl Dictionary {
+impl Object {
 	static {
-		clone(dict: Dictionary): Dictionary { # {{{
-			if dict.clone is Function {
-				return dict.clone()!!
+		clone(object: Object): Object { # {{{
+			if object.clone is Function {
+				return object.clone()!!
 			}
 
 			var clone = {}
 
-			for var value, key of dict {
+			for var value, key of object {
 				clone[key] = $clone(value)
 			}
 
 			return clone
 		} # }}}
-		defaults(...args): Dictionary => Dictionary.merge({}, ...args)
-		isEmpty(dict: Dictionary): Boolean { # {{{
-			for var value of dict {
+		defaults(...args): Object => Object.merge({}, ...args)
+		isEmpty(object: Object): Boolean { # {{{
+			for var value of object {
 				return false
 			}
 
 			return true
 		} # }}}
-		key(dict: Dictionary, index: Number): String? { # {{{
+		key(object: Object, index: Number): String? { # {{{
 			var mut i = 0
 
-			for var _, key of dict {
+			for var _, key of object {
 				if i == index {
 					return key
 				}
@@ -265,26 +265,26 @@ impl Dictionary {
 
 			return null
 		} # }}}
-		length(dict: Dictionary): Number => Dictionary.keys(dict).length
-		map(dict: Dictionary, fn: Function): Array => Dictionary.entries(dict).map(fn)
-		merge(...args?): Dictionary { # {{{
-			var mut source: Dictionary = {}
+		length(object: Object): Number => Object.keys(object).length
+		map(object: Object, fn: Function): Array => Object.entries(object).map(fn)
+		merge(...args?): Object { # {{{
+			var mut source = {}
 
 			var mut i = 0
 			var l = args.length
 			var dyn src
-			while i < l && !((src ?= args[i]) && src is Dictionary) {
+			while i < l && !((src ?= args[i]) && src is Object) {
 				i += 1
 			}
 
 			i += 1
 
-			if ?src && src is Dictionary {
+			if ?src && src is Object {
 				source = src
 			}
 
 			while i < l {
-				if args[i] is Dictionary || args[i] is Object {
+				if args[i] is Object {
 					for var value, key of args[i] {
 						$merge(source, key, value)
 					}
@@ -295,8 +295,8 @@ impl Dictionary {
 
 			return source
 		} # }}}
-		same(a: Dictionary, b: Dictionary): Boolean { # {{{
-			return false unless Array.same(Dictionary.keys(a), Dictionary.keys(b))
+		same(a: Object, b: Object): Boolean { # {{{
+			return false unless Array.same(Object.keys(a), Object.keys(b))
 
 			for var value, key of a {
 				if value != b[key] {
@@ -306,10 +306,10 @@ impl Dictionary {
 
 			return true
 		} # }}}
-		value(dict: Dictionary, index: Number): Any? { # {{{
+		value(object: Object, index: Number): Any? { # {{{
 			var mut i = 0
 
-			for var value of dict {
+			for var value of object {
 				if i == index {
 					return value
 				}
