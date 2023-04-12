@@ -97,7 +97,7 @@ impl Array {
 				return false
 			}
 
-			for var i from 0 til a.length {
+			for var i from 0 to~ a.length {
 				if a[i] != b[i] {
 					return false
 				}
@@ -107,7 +107,7 @@ impl Array {
 		} # }}}
 	}
 	append(...args?): Array { # {{{
-		for var k from 0 til args.length {
+		for var k from 0 to~ args.length {
 			var arg: Array = Helper.array(args[k])
 			var l = arg.length
 
@@ -133,7 +133,7 @@ impl Array {
 			this.pushUniq(...args[0])
 		}
 		else {
-			for i from 0 til args.length {
+			for i from 0 to~ args.length {
 				this.pushUniq(...args[i])
 			}
 		}
@@ -153,7 +153,7 @@ impl Array {
 	} # }}}
 	clone(): Array { # {{{
 		var mut i = this.length
-		var clone = new Array(i)
+		var clone = Array.new(i)
 
 		while i > 0 {
 			i -= 1
@@ -208,13 +208,13 @@ impl Array {
 		if items.length == 1 {
 			var dyn item = items[0]
 
-			for var i from this.length - 1 to 0 by -1 when this[i] == item {
+			for var i from this.length - 1 to 0 step -1 when this[i] == item {
 				this.splice(i, 1)
 			}
 		}
 		else {
 			for var item in items {
-				for var i from this.length - 1 to 0 by -1 when this[i] == item {
+				for var i from this.length - 1 to 0 step -1 when this[i] == item {
 					this.splice(i, 1)
 				}
 			}
@@ -245,6 +245,9 @@ impl Object {
 			return clone
 		} # }}}
 		defaults(...args): Object => Object.merge({}, ...args)
+		delete(object: Object, property): Void {
+			Helper.delete(object, property)
+		}
 		isEmpty(object: Object): Boolean { # {{{
 			for var value of object {
 				return false
