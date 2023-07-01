@@ -7,7 +7,7 @@
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  **/
-import 'timsort' => TimSort
+import 'npm:timsort' => TimSort
 
 func $clone(value? = null) { # {{{
 	if value == null {
