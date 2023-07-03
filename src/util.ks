@@ -82,7 +82,7 @@ impl Array {
 
 			while i < l {
 				if args[i] is Array {
-					for value in args[i] {
+					for var value in args[i] {
 						source.pushUniq(value)
 					}
 				}
@@ -196,7 +196,7 @@ impl Array {
 			}
 		}
 		else {
-			for item in args {
+			for var item in args {
 				if !this.contains(item) {
 					this.push(item)
 				}
