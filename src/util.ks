@@ -129,12 +129,12 @@ impl Array {
 		return this
 	} # }}}
 	appendUniq(...args?): Array { # {{{
-		if args.length == 1 {
-			this.pushUniq(...args[0])
-		}
-		else {
-			for i from 0 to~ args.length {
+		for i from 0 to~ args.length {
+			if args[i] is Array {
 				this.pushUniq(...args[i])
+			}
+			else {
+				this.pushUniq(args[i])
 			}
 		}
 		return this
