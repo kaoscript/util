@@ -74,9 +74,22 @@ impl Array {
 			var mut source = []
 			var mut i = 0
 
-			while i < l && !((source ?= args[i]) && source is Array) {
+			// TODO!
+			// while i < l && !((source ?= args[i]) && source is Array) {
+			// 	i += 1
+			// }
+			while i < l {
+				if args[i] is Array {
+					source = args[i]
+
+					break
+				}
+
 				i += 1
 			}
+
+			// TODO!
+			// return [] unless source is Array
 
 			i += 1
 
