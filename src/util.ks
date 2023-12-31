@@ -340,5 +340,5 @@ impl Object {
 
 impl String {
 	dasherize(): String => this.replace(/([A-Z])/g, '-$1').replace(/[^A-Za-z0-9]+/g, '-').toLowerCase()
-	toFirstLowerCase(): String => this.charAt(0).toLowerCase():String + this.substring(1):String
+	toFirstLowerCase(): String => this.charAt(0).toLowerCase():!(String) + this.substring(1):!(String)
 }
