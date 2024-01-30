@@ -53,43 +53,18 @@ func $mergeObject(source, current) { # {{{
 	}
 } # }}}
 
-#[rules(non-exhaustive)]
-extern {
-	sealed class Array {
-		length: Number
-		slice(begin?, end?): Array
-	}
-
-	sealed class Object {
-		static {
-			keys(...): Array<String>
-		}
-	}
-}
-
 impl Array {
 	static {
 		merge(...args): Array { # {{{
 			var l = args.length
-			var mut source = []
+			var mut source = null
 			var mut i = 0
 
-			// TODO!
-			// while i < l && !((source ?= args[i]) && source is Array) {
-			// 	i += 1
-			// }
-			while i < l {
-				if args[i] is Array {
-					source = args[i]
-
-					break
-				}
-
+			while i < l && !((source ?= args[i]) && source is Array) {
 				i += 1
 			}
 
-			// TODO!
-			// return [] unless source is Array
+			return [] unless source is Array
 
 			i += 1
 
