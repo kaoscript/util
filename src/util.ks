@@ -96,7 +96,7 @@ impl Array {
 	}
 	append(...args?): Array { # {{{
 		for var k from 0 to~ args.length {
-			var arg: Array = Helper.array(args[k])
+			var arg = Helper.array(args[k]):!!(Array)
 			var l = arg.length
 
 			if l > 50000 {
@@ -210,8 +210,8 @@ impl Array {
 
 		return this
 	} # }}}
-	sort(compareFn): Array { # {{{
-		TimSort.sort(this, compareFn)
+	overwrite sort(compare) { # {{{
+		TimSort.sort(this, compare)
 
 		return this
 	} # }}}
