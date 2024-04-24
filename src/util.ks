@@ -96,7 +96,7 @@ impl Array {
 	}
 	append(...args?): Array { # {{{
 		for var k from 0 to~ args.length {
-			var arg = Helper.array(args[k]):!!(Array)
+			var arg = Helper.array(args[k]):!!!(Array)
 			var l = arg.length
 
 			if l > 50000 {
@@ -117,7 +117,7 @@ impl Array {
 		return this
 	} # }}}
 	appendUniq(...args?): Array { # {{{
-		for i from 0 to~ args.length {
+		for var i from 0 to~ args.length {
 			if args[i] is Array {
 				this.pushUniq(...args[i])
 			}
@@ -315,5 +315,5 @@ impl Object {
 
 impl String {
 	dasherize(): String => this.replace(/([A-Z])/g, '-$1').replace(/[^A-Za-z0-9]+/g, '-').toLowerCase()
-	toFirstLowerCase(): String => this.charAt(0).toLowerCase():!(String) + this.substring(1):!(String)
+	toFirstLowerCase(): String => this.charAt(0).toLowerCase():!!(String) + this.substring(1):!!(String)
 }
