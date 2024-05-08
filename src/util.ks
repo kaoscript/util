@@ -175,7 +175,12 @@ impl Array {
 		return result
 	} # }}}
 	last(index: Number = 1) { # {{{
-		return this.length != 0 ? this[this.length - index] : null
+		if this.length != 0 {
+			return this[this.length - index]
+		}
+		else {
+			return null
+		}
 	} # }}}
 	pushUniq(...args?): Array { # {{{
 		if args.length == 1 {
