@@ -319,6 +319,7 @@ impl Object {
 }
 
 impl String {
+	capitalize(): String => @charAt(0).toUpperCase() + @substring(1).toLowerCase()
 	dasherize(): String => this.replace(/([A-Z])/g, '-$1').replace(/[^A-Za-z0-9]+/g, '-').toLowerCase()
 	toFirstLowerCase(): String => this.charAt(0).toLowerCase():!!(String) + this.substring(1):!!(String)
 }
